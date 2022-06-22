@@ -1,5 +1,6 @@
 // https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md
 
+use base64::encode;
 use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -137,13 +138,51 @@ impl IssueCredentialResponseBuilder {
             Message::new().m_type("https://didcomm.org/issue-credential/2.1/issue-credential");
         for attachment in &self.attachments {
             message.append_attachment(
-                AttachmentBuilder::new(true).with_data(
-                    AttachmentDataBuilder::new()
-                        .with_raw_payload(serde_json::to_string(attachment).unwrap()),
-                ),
+                AttachmentBuilder::new(true)
+                    .with_id("credential")
+                    .with_media_type("application/json")
+                    .with_data(AttachmentDataBuilder::new().with_encoded_payload(&encode(
+                        &serde_json::to_string(attachment).unwrap(),
+                    ))),
             );
         }
 
         Ok(message)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use base64::decode;
+    use std::str::from_utf8;
+
+    #[test]
+    fn test_build_issue_credential() {
+        let credential = Value::String("Credential".to_string());
+        let response = IssueCredentialResponseBuilder::new()
+            .attachment(credential)
+            .build_issue_credential()
+            .unwrap();
+
+        assert_eq!(
+            response.get_didcomm_header().m_type,
+            "https://didcomm.org/issue-credential/2.1/issue-credential"
+        );
+        let response_json = response.as_raw_json().unwrap();
+        let response: Value = serde_json::from_str(&response_json).unwrap();
+        assert_eq!(
+            from_utf8(
+                &decode(
+                    response["attachments"][0]["data"]["base64"]
+                        .as_str()
+                        .unwrap()
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            "\"Credential\"".to_string()
+        );
+        println!("{}", serde_json::to_string_pretty(&response).unwrap());
     }
 }
