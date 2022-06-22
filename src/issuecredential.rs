@@ -1,6 +1,6 @@
 // https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md
 
-use didcomm_rs::Message;
+use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -41,6 +41,7 @@ pub struct IssueCredentialResponseBuilder {
     goal_code: Option<String>,
     message: Option<Message>,
     replacement_id: Option<String>,
+    attachments: Vec<Value>,
 }
 
 impl IssueCredentialResponseBuilder {
@@ -80,6 +81,11 @@ impl IssueCredentialResponseBuilder {
 
     pub fn replacement_id(&mut self, replacement_id: String) -> &mut Self {
         self.replacement_id = Some(replacement_id);
+        self
+    }
+
+    pub fn attachment(&mut self, attachment: Value) -> &mut Self {
+        self.attachments.push(attachment);
         self
     }
 
@@ -124,5 +130,20 @@ impl IssueCredentialResponseBuilder {
                 "did_doc~attach".to_string(),
                 serde_json::to_string_pretty(&self.did_doc.clone().unwrap()).unwrap(),
             ))
+    }
+
+    pub fn build_issue_credential(&mut self) -> Result<Message, &'static str> {
+        let mut message =
+            Message::new().m_type("https://didcomm.org/issue-credential/2.1/issue-credential");
+        for attachment in &self.attachments {
+            message.append_attachment(
+                AttachmentBuilder::new(true).with_data(
+                    AttachmentDataBuilder::new()
+                        .with_raw_payload(serde_json::to_string(attachment).unwrap()),
+                ),
+            );
+        }
+
+        Ok(message)
     }
 }
