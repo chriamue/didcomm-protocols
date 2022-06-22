@@ -1,6 +1,7 @@
 pub mod basicmessage;
 pub mod didexchange;
 pub mod invitation;
+pub mod issuecredential;
 pub mod service;
 pub mod trustping;
 
