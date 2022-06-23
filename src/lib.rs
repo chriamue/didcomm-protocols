@@ -8,5 +8,6 @@ pub mod trustping;
 pub use basicmessage::BasicMessageBuilder;
 pub use didexchange::DidExchangeResponseBuilder;
 pub use invitation::InvitationBuilder;
+pub use issuecredential::*;
 pub use service::Service;
 pub use trustping::TrustPingResponseBuilder;

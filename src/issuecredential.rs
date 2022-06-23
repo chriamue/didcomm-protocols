@@ -2,11 +2,12 @@
 
 use base64::encode;
 use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 // https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md#preview-credential
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, JsonSchema)]
 pub struct CredentialPreview {
     #[serde(rename = "type")]
     pub type_: String,
@@ -15,7 +16,7 @@ pub struct CredentialPreview {
 
 // if mime-type is not null, then value is always a base64url-encoded string that represents a binary BLOB, and mime-type tells how to interpret the BLOB after base64url-decoding.
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, JsonSchema)]
 pub struct CredentialAttribute {
     pub name: String,
     #[serde(rename = "mime-type")]
