@@ -10,22 +10,22 @@ use serde_json::Value;
 pub struct CredentialPreview {
     #[serde(rename = "type")]
     pub type_: String,
-    pub attrubutes: Vec<CredentialPreviewAttribute>,
+    pub attrubutes: Vec<CredentialAttribute>,
 }
 
 // if mime-type is not null, then value is always a base64url-encoded string that represents a binary BLOB, and mime-type tells how to interpret the BLOB after base64url-decoding.
 
 #[derive(Serialize, Deserialize)]
-pub struct CredentialPreviewAttribute {
+pub struct CredentialAttribute {
     pub name: String,
     #[serde(rename = "mime-type")]
     pub mime_type: Option<String>,
     pub value: String,
 }
 
-impl CredentialPreviewAttribute {
+impl CredentialAttribute {
     pub fn new(name: String, value: String) -> Self {
-        CredentialPreviewAttribute {
+        CredentialAttribute {
             name,
             value,
             mime_type: None,
