@@ -2,6 +2,7 @@
 //!
 //! protocol for issuing credentials. This is the basis of interoperability between Issuers and Holders.
 //! <https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md>
+//! ![](https://github.com/hyperledger/aries-rfcs/raw/main/features/0453-issue-credential-v2/credential-issuance.png)
 
 use base64::encode;
 use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
@@ -14,7 +15,7 @@ use serde_json::Value;
 pub struct CredentialPreview {
     #[serde(rename = "type")]
     pub type_: String,
-    pub attrubutes: Vec<CredentialAttribute>,
+    pub attributes: Vec<CredentialAttribute>,
 }
 
 // if mime-type is not null, then value is always a base64url-encoded string that represents a binary BLOB, and mime-type tells how to interpret the BLOB after base64url-decoding.
@@ -125,27 +126,32 @@ impl IssueCredentialResponseBuilder {
     }
 
     pub fn build_propose_credential(&mut self) -> Result<Message, &'static str> {
-        Ok(Message::new()
+        let mut message = Message::new()
             .m_type("https://didcomm.org/issue-credential/2.1/propose-credential")
-            .add_header_field("goal".to_string(), "To create a relationship".to_string())
-            .add_header_field("did".to_string(), self.did.clone().unwrap())
             .add_header_field(
-                "did_doc~attach".to_string(),
-                serde_json::to_string_pretty(&self.did_doc.clone().unwrap()).unwrap(),
-            ))
+                "credential_preview".to_string(),
+                serde_json::to_string(&self.credential_preview.as_ref().unwrap()).unwrap(),
+            );
+        if let Some(comment) = self.comment.as_ref() {
+            message = message.add_header_field("comment".to_string(), comment.to_string())
+        }
+        if let Some(goal_code) = self.goal_code.as_ref() {
+            message = message.add_header_field("goal_code".to_string(), goal_code.to_string())
+        }
+        Ok(message)
     }
 
     pub fn build_offer_credential(&mut self) -> Result<Message, &'static str> {
         let mut message = Message::new()
             .m_type("https://didcomm.org/issue-credential/2.1/offer-credential")
             .add_header_field(
-                "comment".to_string(),
-                self.comment.as_ref().unwrap().to_string(),
-            )
-            .add_header_field(
                 "credential_preview".to_string(),
                 serde_json::to_string(&self.credential_preview.as_ref().unwrap()).unwrap(),
             );
+
+        if let Some(comment) = self.comment.as_ref() {
+            message = message.add_header_field("comment".to_string(), comment.to_string())
+        }
         if let Some(goal_code) = self.goal_code.as_ref() {
             message = message.add_header_field("goal_code".to_string(), goal_code.to_string())
         }
@@ -175,6 +181,26 @@ mod tests {
     use super::*;
     use base64::decode;
     use std::str::from_utf8;
+
+    #[test]
+    fn test_build_propose_credential() {
+        let credential_preview = CredentialPreview {
+            type_: "".to_string(),
+            attributes: vec![CredentialAttribute::new(
+                "name".to_string(),
+                "value".to_string(),
+            )],
+        };
+        let response = IssueCredentialResponseBuilder::new()
+            .credential_preview(credential_preview)
+            .build_propose_credential()
+            .unwrap();
+
+        assert_eq!(
+            response.get_didcomm_header().m_type,
+            "https://didcomm.org/issue-credential/2.1/propose-credential"
+        );
+    }
 
     #[test]
     fn test_build_issue_credential() {
