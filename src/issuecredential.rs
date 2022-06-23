@@ -1,4 +1,7 @@
-// https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md
+//! # issuecredential
+//!
+//! protocol for issuing credentials. This is the basis of interoperability between Issuers and Holders.
+//! <https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md>
 
 use base64::encode;
 use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
@@ -34,6 +37,21 @@ impl CredentialAttribute {
     }
 }
 
+/// Issue Credential Response Builder
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::Value;
+/// use didcomm_protocols::IssueCredentialResponseBuilder;
+/// let credential = Value::String("Credential".to_string());
+/// let response = IssueCredentialResponseBuilder::new()
+///     .attachment(credential)
+///     .build_issue_credential()
+///     .unwrap();
+/// assert_eq!(response.get_didcomm_header().m_type,
+///     "https://didcomm.org/issue-credential/2.1/issue-credential");
+/// ```
 #[derive(Default)]
 pub struct IssueCredentialResponseBuilder {
     comment: Option<String>,
@@ -106,23 +124,6 @@ impl IssueCredentialResponseBuilder {
         }
     }
 
-    pub fn build_offer_credential(&mut self) -> Result<Message, &'static str> {
-        Ok(Message::new()
-            .m_type("https://didcomm.org/issue-credential/2.1/offer-credential")
-            .add_header_field(
-                "comment".to_string(),
-                self.comment.as_ref().unwrap().to_string(),
-            )
-            .add_header_field(
-                "goal_code".to_string(),
-                self.goal_code.as_ref().unwrap().to_string(),
-            )
-            .add_header_field(
-                "credential_preview".to_string(),
-                serde_json::to_string(&self.credential_preview.as_ref().unwrap()).unwrap(),
-            ))
-    }
-
     pub fn build_propose_credential(&mut self) -> Result<Message, &'static str> {
         Ok(Message::new()
             .m_type("https://didcomm.org/issue-credential/2.1/propose-credential")
@@ -132,6 +133,23 @@ impl IssueCredentialResponseBuilder {
                 "did_doc~attach".to_string(),
                 serde_json::to_string_pretty(&self.did_doc.clone().unwrap()).unwrap(),
             ))
+    }
+
+    pub fn build_offer_credential(&mut self) -> Result<Message, &'static str> {
+        let mut message = Message::new()
+            .m_type("https://didcomm.org/issue-credential/2.1/offer-credential")
+            .add_header_field(
+                "comment".to_string(),
+                self.comment.as_ref().unwrap().to_string(),
+            )
+            .add_header_field(
+                "credential_preview".to_string(),
+                serde_json::to_string(&self.credential_preview.as_ref().unwrap()).unwrap(),
+            );
+        if let Some(goal_code) = self.goal_code.as_ref() {
+            message = message.add_header_field("goal_code".to_string(), goal_code.to_string())
+        }
+        Ok(message)
     }
 
     pub fn build_issue_credential(&mut self) -> Result<Message, &'static str> {
