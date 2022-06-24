@@ -1,4 +1,8 @@
-// https://identity.foundation/didcomm-messaging/spec/#invitation
+//! # Invitation
+//!
+//! The out-of-band protocol consists in a single message that is sent by the sender.
+//! <https://identity.foundation/didcomm-messaging/spec/#invitation>
+
 use crate::service::Service;
 use didcomm_rs::{AttachmentBuilder, AttachmentDataBuilder, Message};
 use serde_json::json;

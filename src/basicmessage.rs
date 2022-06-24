@@ -1,4 +1,7 @@
-// https://didcomm.org/basicmessage/2.0/
+//! # Basic Message
+//!
+//! The BasicMessage protocol describes a stateless, easy to support user message protocol. It has a single message type used to communicate.
+//! <https://didcomm.org/basicmessage/2.0/>
 
 use didcomm_rs::Message;
 use serde_json::json;

@@ -1,4 +1,7 @@
-// https://github.com/hyperledger/aries-rfcs/blob/main/features/0023-did-exchange/README.md
+//! # DID Exchange Protocol 1.0
+//!
+//! Protocol to exchange DIDs between agents when establishing a DID based relationship.
+//! <https://github.com/hyperledger/aries-rfcs/blob/main/features/0023-did-exchange/README.md>
 
 use didcomm_rs::Message;
 use serde_json::Value;

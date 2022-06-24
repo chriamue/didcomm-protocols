@@ -1,4 +1,7 @@
-// https://identity.foundation/didcomm-messaging/spec/#trust-ping-protocol-20
+//! # Trust Ping Protocol 2.0
+//!
+//! The trust-ping protocol defined in the DIDComm Messaging Spec. This enables the sender and recipient to engage in an exchange of trust pings.
+//! <https://identity.foundation/didcomm-messaging/spec/#trust-ping-protocol-20>
 
 use didcomm_rs::Message;
 use serde_json::json;
