@@ -166,9 +166,13 @@ impl IssueCredentialResponseBuilder {
                 AttachmentBuilder::new(true)
                     .with_id("credential")
                     .with_media_type("application/json")
-                    .with_data(AttachmentDataBuilder::new().with_encoded_payload(&encode(
-                        &serde_json::to_string(attachment).unwrap(),
-                    ))),
+                    .with_data(
+                        AttachmentDataBuilder::new()
+                            .with_link("")
+                            .with_encoded_payload(&encode(
+                                &serde_json::to_string(attachment).unwrap(),
+                            )),
+                    ),
             );
         }
 
