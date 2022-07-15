@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 base58 = "0.2"
 base64 = "0.13"
+chrono = "0.4"
 didcomm-rs = { version = "0.7.2", git = "https://github.com/decentralized-identity/didcomm-rs" }
 did-key = { version = "*" }
 serde = { version = "1", features = ["derive"] }
@@ -15,6 +16,7 @@ uuid = { version = "1", features = ["serde", "v4"] }
 
 [target.wasm32-unknown-unknown.dependencies]
 uuid = { version = "0.8", features = ["serde", "v4", "wasm-bindgen"] }
+chrono = { version = "0.4", features = ["wasmbind"] }
 
 [target.wasm32-unknown-unknown.dev-dependencies]
 wasm-bindgen-test = "0.2"

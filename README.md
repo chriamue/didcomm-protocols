@@ -23,7 +23,7 @@ wasm-pack test --node
 
 | Protocol                                                                                                  | Not started |     In Development     | In Review |        Done        | Notes                    |
 | :-------------------------------------------------------------------------------------------------------- | :---------: | :--------------------: | :-------: | :----------------: | :----------------------- |
-| [basic message](https://didcomm.org/basicmessage/2.0/)                                                    |             | :large_orange_diamond: |           |                    |                          |
+| [basic message](https://didcomm.org/basicmessage/2.0/)                                                    |             |  |           | :heavy_check_mark: | Finished implementation. |
 | [did exchange](https://github.com/hyperledger/aries-rfcs/blob/main/features/0023-did-exchange)            |             | :large_orange_diamond: |           |                    |                          |
 | [issue credential](https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2) |             | :large_orange_diamond: |           |                    |                          |
 | [present proof](https://github.com/hyperledger/aries-rfcs/blob/main/features/0454-present-proof-v2)       |             | :large_orange_diamond: |           |                    |                          |
