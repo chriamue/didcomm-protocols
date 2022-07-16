@@ -52,7 +52,7 @@ impl DidExchangeResponseBuilder {
 
     pub fn build_request(&mut self) -> Result<Message, &'static str> {
         let thid = match &self.message {
-            Some(message) => message.get_didcomm_header().thid.clone().unwrap(),
+            Some(message) => message.get_didcomm_header().id.clone(),
             _ => Uuid::new_v4().to_string(),
         };
         Ok(Message::new()
@@ -99,7 +99,7 @@ impl DidExchangeResponseBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::InvitationBuilder;
+    use crate::{invitation::GoalCode, InvitationBuilder};
     use did_key::{generate, DIDCore, X25519KeyPair, CONFIG_LD_PUBLIC};
 
     #[test]
@@ -132,7 +132,7 @@ mod tests {
 
         let invitation = InvitationBuilder::new()
             .goal("to create a relationship".to_string())
-            .goal_code("aries.rel.build".to_string())
+            .goal_code(GoalCode::Other("aries.rel.build".to_string()))
             .build()
             .unwrap();
 
@@ -174,7 +174,7 @@ mod tests {
 
         let invitation = InvitationBuilder::new()
             .goal("to create a relationship".to_string())
-            .goal_code("aries.rel.build".to_string())
+            .goal_code(GoalCode::Other("aries.rel.build".to_string()))
             .build()
             .unwrap();
 
